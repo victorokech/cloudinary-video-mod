@@ -24,7 +24,7 @@ Let's get started.
 
 ## PHPSandbox and Github
 
-The final project can be viewed on [PHPSandbox](https://phpsandbox.io/e/x/itirk?layout=EditorPreview&defaultPath=%2F&theme=dark&showExplorer=no&openedFiles=/app/Http/Livewire/MultipleFileUpload.php) and the entire source code is available on my [Github](https://github.com/victorokech/cloudinary-video-slideshow) repository.
+The final project can be viewed on [PHPSandbox](https://phpsandbox.io/e/x/itirk?layout=EditorPreview&defaultPath=%2F&theme=dark&showExplorer=no&openedFiles=/app/Http/Livewire/MultipleFileUpload.php) and the entire source code is available on my [Github](https://github.com/victorokech/cloudinary-video-mod) repository.
 
 ## Prerequisites
 
@@ -40,19 +40,19 @@ start ensure you have Composer installed on your machine. Follow step 1 below to
 1. Install [Composer](https://getcomposer.org/) and [PHP](https://www.php.net/manual/en/install.windows.tools.php) on
    your development or production machine.
 2. Install Laravel
-
-	1. Via Composer:
-
-	   `composer create-project --prefer-dist laravel/laravel cloudinary-video-slideshow`
-	2. Via Laravel Installer
-
-	   `composer global require laravel/installer`
-
-	   `laravel new cloudinary-video-slideshow`
+   
+   1. Via Composer:
+      
+      `composer create-project --prefer-dist laravel/laravel cloudinary-video-slideshow`
+   2. Via Laravel Installer
+      
+      `composer global require laravel/installer`
+      
+      `laravel new cloudinary-video-slideshow`
 3. In step 2 above we have installed the Laravel Installer and used it to scaffold a new application in the folder `cloudinary-video-slideshow`. With Laravel installed, we should be able to start and test the server ensuring everything is okay. Change the directory to the project folder and run the local development server by typing the following commands:
-
+   
    `cd cloudinary-video-slideshow`
-
+   
    `php artisan serve`
 
 The Laravel project is now up and running. When you open `http://localhost:8000` on your computer, you should see the image below:
@@ -63,12 +63,15 @@ The Laravel project is now up and running. When you open `http://localhost:8000`
 
 Cloudinary has a tonne of features from media upload, storage, administration, manipulation to optimization and delivery. In this article, we will use Cloudinary Video Transformations to combine existing or newly uploaded media files to create a slideshow.
 
-1. Sign up for a free Cloudinary account then navigate to the Console page and take note of your Cloud name, API Key and
-   API Secret.
-
+1. Sign up for a free Cloudinary account then navigate to the Console page and take note of your Cloud name, API Key and API Secret.
    ![Cloudinary Dashboard](https://res.cloudinary.com/dgrpkngjn/image/upload/v1655976836/assets/cloudinary_dashboard.png)
-2. Install [Cloudinary’s Laravel SDK](https://github.com/cloudinary-labs/cloudinary-laravel#installation):
-
+2. Google AI Video Moderation Addon - while at the Cloudinary dashboard, click on the Addons menu and subscribe for the Google AI Video Moderation Addon.
+   ![Cloudinary Addons](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_addons_z9ovwn.png)
+   
+   ![Cloudinary Google AI Video Moderation Subscription](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_ai_subscription_eqaqkd.png)
+   
+3. Install [Cloudinary’s Laravel SDK](https://github.com/cloudinary-labs/cloudinary-laravel#installation):
+   
    `composer require cloudinary-labs/cloudinary-laravel`
 
 **Note**: Please ensure you follow all the steps in the #Installation section. Publish the configuration file and add
@@ -80,20 +83,27 @@ CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
 CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
 ```
 
-## Generating a Slideshow
+## Cloudinary Video Moderation
 
-There are two ways you can generate a slide show depending on your use case:
+Cloudinary employs two addons for video moderation:
 
-1. Using a delivery URL - here you can use a template downloaded from Cloudinary to combine the relevant components in a delivery URL that looks as follows:
-   `https://res.cloudinary.com/<cloudname>/video/upload/fn_render:<global-settings>;vars_(<slide-settings>(<individual-slide>))/<global-transformations>/<template>.<ext>`
-2. Using the Upload API - this is the technique we will use in this article. We will use the `create_slideshow` method of the Upload API. This will create a new video in your Cloudinary account based on the parameters provided.
+1. Rekognition AI Video Moderaion by AWS
+2. Google AI Video Moderation
 
-## Multiple File Upload with Livewire
+Google assigns a moderation confidence level indicating the chances that a video contains unacceptable content. The likelihood is given as a value on the following scale: `very_unlikely`, `unlikely`, `possible`, `likely`, and `very_likely`.
 
-To generate a video slideshow we will need a UI (User Interface), we will use the Laravel package Livewire to build this.
+To send a request for Google AI Video Moderation with the default rejection confidence level we need to set the `moderation` parameter to `google_video_moderation` and set the `resource_type` to `video`:
+
+`$cloudinary->uploadApi()->upload("my_file.mp4", [ "resource_type" => "video", "moderation" => "google_video_moderation"]);`
+
+Let's see this in code.
+
+## File Upload with Livewire
+
+To uplaod a video for moderation we will need a UI (User Interface), we will use the Laravel package Livewire to build this.
 
 1. Install Livewire Package by running the following command in your Laravel project:
-
+   
    `composer require livewire/livewire`
 2. Include Livewire scripts and styles on every page that will be using Livewire. In our case `welcome.blade.php`:
 
@@ -110,26 +120,26 @@ To generate a video slideshow we will need a UI (User Interface), we will use th
 ```
 
 3. We will then create a Livewire Component to handle our image uploads:
+   
+   `php artisan make:livewire FileUpload`
 
-   `php artisan make:livewire MultipleFileUpload`
-
-This will create two files, first `app/Http/Livewire/MultipleFileUpload.php` and the other one
+This will create two files, first `app/Http/Livewire/FileUpload.php` and the other one
 in `resources/views/livewire/multiple-file-upload.blade.php`
 
 Now you can use this component anywhere in your Laravel project using the following snippet:
 
-`<livewire:multiple-file-upload/>`
+`<livewire:file-upload/>`
 
 or
 
-`@livewire('multiple-file-upload')`
+`@livewire('file-upload')`
 
 3. Open `resources/views/welcome.blade.php` and add the following code within the `<body></body>` tags as shown below:
 
 ```html
 <body class="antialiased">
   <div>
-    @livewire('multiple-file-upload')
+    @livewire('file-upload')
   </div>
 </body>
 ```
@@ -141,290 +151,169 @@ This includes the Livewire component we created earlier in our `welcome.blade.ph
 3. Open the file `resources/views/livewire/multiple-file-upload.blade.php` and populate it with the following code:
 
 ```html
-<form class="mb-5" wire:submit.prevent="uploadFiles">
+<form class="mb-5" wire:submit.prevent="uploadVideo">
   <div class="form-group row mt-5 mb-3">
     <div class="input-group">
-      <input type="file" class="form-control @error('files'|'files.*') is-invalid @enderror" placeholder="Choose files..." wire:model="files" multiple>
-	@error('files'|'files.*')
-	  <div class="invalid-feedback">{{ $message }}</div>
+      <input id="video" type="file" class="form-control @error('video') is-invalid @enderror" wire:model="video">
+	@error('video')
+		<div class="invalid-feedback">{{ $message }}</div>
 	@enderror
-    </div>
-    <small class="text-muted text-center mt-2" wire:loading wire:target="files">
-      {{ __('Uploading') }}…
-    </small>
-  </div>
-  <div class="text-center">
-     <button type="submit" class="btn btn-sm btn-primary w-25">
-       {{ __('Generate Slideshow') }}
-     </button>
-   </div>
+	</div>
+	<small class="text-muted text-center mt-2" wire:loading wire:target="video">
+		{{ __('Uploading') }}&hellip;
+	</small>
+	</div>
+	<div class="text-center">
+		<button type="submit" class="btn btn-sm btn-primary">
+			{{ __('Upload Video') }}
+			<i class="spinner-border spinner-border-sm ml-1 mt-1" wire:loading wire:target="uploadVideo"></i>
+		</button>
+	</div>
 </form>
 ```
 
-This is our Livewire Component view, this basically will display a form with a multiple-file input and a button.
+This is our Livewire Component view, this basically will display a form with a file input and a button.
 
 You will see the implementation in code shortly.
 
 ## Implementation in Code
 
-Open the file `app/Http/Livewire/MultipleFileUpload.php`. Here, we are going to add a method that will handle the multiple files selected by the user, upload them to Cloudinary and save their `public_id`'s in an array that we will use later on.
+Open the file `app/Http/Livewire/FileUpload.php`. Here, we are going to add a method that will handle the video selected by the user, upload them to Cloudinary for video moderation.
 
 Add the following code to this file.
 
-1. First, we use Livewires `WithFileUploads` to help us with file uploads, then create two variables `$media`
-   and `$optimizedImage` which is an array that will contain the image URLs we get back from Cloudinary.
-
+1. First, we use Livewires `WithFileUploads` to help us with file uploads, then create the variable `$video`.
+   
    ```php
    use Livewire\WithFileUploads;
    
-   public $files = [];
-   public $slides = [];
-   
-   // Needed to specify the type of media file for our slideshow
-   public $imageExt = ['jpeg', 'jpg', 'png', 'gif',];
+   public $video;
    ```
-2. Secondly, we will create the `uploadFiles` function which will upload the media files to [Cloudinary](https://cloudinary.com). We will apply specific transformations that will optimize our images for our slideshow with an aspect ratio of `9:16` which works great for most social media platforms.
-
+2. Secondly, we will create the `uploadVideo` function which will upload the video to [Cloudinary](https://cloudinary.com). We will add the `folder`, `resource_type`, `notification_url` and `moderation` which will moderate the video.
+   
    ```php
-   public function uploadFiles() {
+   public function uploadVideo() {
     ...
    }
    ```
 3. Let's populate our method in step 2 above:
-
-   ```php
-   public function uploadFiles() {
-     /* First we validate the input from the user. We will take multiple image and or video files less than 10MB in size */
-     $this->validate([
-       'files'   => [
-         'required',
-         'max:102400'
-        ],
-       'files.*' => 'mimes:jpeg,jpg,png,gif,avi,mp4,webm,mov,ogg,mkv,flv,m3u8,ts,3gp,wmv,3g2,m4v'
-     ]);
    
-     /* We will now upload the media files to Cloudinary with specified transformations and get back the public_id */
-     foreach ($this->files as $file) {
-       $media = cloudinary()->upload($file->getRealPath(), [
-         'folder'         => 'video-slideshow',
-         'public_id'      => $file->getClientOriginalName(),
-         'transformation' => [
-           'aspect_ratio' => '9:16',
-   	'gravity'      => 'auto', //can be face, face etc
-   	'crop'         => 'fill'
-         ]
-       ])->getPublicId();
-   
-       /* Here we will check whether the file is an image or video from its extension and generate the appropriate media type parameter for the manifest_json */
-       if (in_array($file->getClientOriginalExtension(), $this->imageExt)) {
-         $this->slides[] = ['media' => 'i:'.$media];
-       } else {
-         $this->slides[] = ['media' => 'v:'.$media];
-       }
-     }
-   
-     /* Creating the manifest_json parameter */
-     $manifestJson = json_encode([
-       "w"    => 540,
-       "h"    => 960,
-       "du"   => 60,
-       "vars" => [
-         "sdur"   => 3000,
-         "tdur"   => 1500,
-         "slides" => $this->slides,
-        ],
-     ]);
-   
-     /* signingData for generating the signature  */
-     $cloudName = env('CLOUDINARY_CLOUD_NAME');
-     $timestamp = (string) Carbon::now()->unix();
-     $signingData = [
-       'timestamp'     => $timestamp,
-       'manifest_json' => $manifestJson,
-       'public_id'     => 'test_slideshow',
-       'folder'        => 'video-slideshow',
-       'notification_url' => env('CLOUDINARY_NOTIFICATION_URL')
-     ];
-     $signature = ApiUtils::signParameters($signingData, env('CLOUDINARY_API_SECRET'));
-   
-     /* Using Laravel Http Request to send a POST request to the create_slideshow end point */
-     $response = Http::post("https://api.cloudinary.com/v1_1/$cloudName/video/create_slideshow", [
-       'api_key'          => env('CLOUDINARY_API_KEY'),
-       'signature'        => $signature,
-       'timestamp'        => $timestamp,
-       'manifest_json'    => $manifestJson,
-       'resource_type'    => 'video',
-       'public_id'        => 'test_slideshow',
-       'folder'           => 'video-slideshow',
-       'notification_url' => env('CLOUDINARY_NOTIFICATION_URL')
-     ]);
-   
-     // Determine if the status code is >= 200 and < 300...
-     if ($response->successful()) {
-       session()->flash('message', 'Slideshow generated successfully!');
-     } else {
-       session()->flash('error', 'Slideshow generation failed! Try again later.');
-     }
-   }
-   ```
-
-   The code above uploads the media files to Cloudinary returning their ` public_id`'s. Let's talk about the code.
-
-	- ### Uploading the media files
-
-	  We will get the files from user input and upload them to Cloudinary and use their `public_id`'s to create the media type parameter `media_` which will take the form `media_i:<public_id>` for images and `media_v:<public_id>` for videos.
-
 ```php
-foreach ($this->files as $file) {
-  $media = cloudinary()->upload($file->getRealPath(), [
-  'folder'         => 'video-slideshow',
-  'public_id'      => $file->getClientOriginalName(),
-  'transformation' => [
-    'aspect_ratio' => '9:16',
-    'gravity'      => 'auto', //can be face, face etc
-    'crop'         => 'fill'
-  ]])->getPublicId();
-
-  if (in_array($file->getClientOriginalExtension(), $this->imageExt)) {
-    $this->slides[] = ['media' => 'i:'.$media];
-  } else {
-    $this->slides[] = ['media' => 'v:'.$media];
-  }
+ public function uploadFiles() {
+  /* First we validate the input from the user. We will take a video file less than 10MB in size */
+	$this->validate([
+	  'video' => [
+	    'required',
+	    'file',
+	    'mimes:avi,mp4,webm,mov,ogg,mkv,flv,m3u8,ts,3gp,wmv,3g2,m4v',
+	    'max:102400'
+	  ],
+	]);
+ 
+  /* Upload video to Cloudinary for moderation */
+	cloudinary()->upload($this->video->getRealPath(), [
+	  'folder'           => 'video-mod',
+	  'resource_type'    => 'video',
+	  'moderation'       => 'google_video_moderation:possible',
+	  'notification_url' => env('CLOUDINARY_NOTIFICATION_URL')
+	]);
+ 
+	session()->flash('message', "Video moderation initiated successfully!");
 }
 ```
 
-- ### The `manifest_json` parameter
+The code above performs validation then uploads the video file to Cloudinary for moderation.
 
-The create a slideshow endpoint requires either a `manifest_transformation` or a `manifest_json`. The `manifest_json` parameter is a stringified json parameter, allowing you to define your slideshow settings in a structured data format, which then needs to be converted to a string.
+On successful implementation, you should be able to see the following when you navigate to `http://localhost:8000`:
 
-```php
-$manifestJson = json_encode([
-  "w"    => 540, 
-  "h"    => 960,
-  "du"   => 60,
-  "vars" => [
-    "sdur"   => 3000,
-    "tdur"   => 1500,
-    "slides" => $this->slides,
-  ],
-]);
-```
+![Cloudinary Video Moderation](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_video_mod_c4akje.png)
 
-You can checkout the [reference](https://cloudinary.com/documentation/video_slideshow_generation#reference) for full details on the relevant options.
+When you successfully upload a video with questionable content you will receive two responses at the `notification_url` we have set.
 
-- ### Generating a signature
-
-Since we are sending a request to the Cloudinary API, we need to create a signature to authenticate our request. Cloudinary SDKs automatically generates this signature for any upload or admin method that requires it. However, in this case we are making a direct call to the REST API and we need to generate the signature.
-
-```php
-$cloudName = env('CLOUDINARY_CLOUD_NAME');
-  $timestamp = (string) Carbon::now()->unix();
-  $signingData = [
-    'timestamp'     => $timestamp,
-    'manifest_json' => $manifestJson,
-    'public_id'     => 'test_slideshow',
-    'folder'        => 'video-slideshow',
-    'notification_url' => env('CLOUDINARY_NOTIFICATION_URL')
-  ];
-
-$signature = ApiUtils::signParameters($signingData, env('CLOUDINARY_API_SECRET'));
-```
-
-The signature is a SHA-1 or SHA-256 hexadecimal message digest created based on the following parameters:
-
-* All parameters added to the method call should be included  **except** : `file`, `cloud_name`, `resource_type` and your `api_key`.
-* Add the `timestamp` parameter.
-* Sort all the parameters in alphabetical order.
-* Separate the parameter names from their values with an `=` and join the parameter/value pairs together with an `&`.
-
-***Tip:*** We took a shortcut and used the Cloudinary SDK `ApiUtils` to create the signature:
-
-```php
-$signature = ApiUtils::signParameters($signingData, env('CLOUDINARY_API_SECRET'));
-````
-
-- ### Sending the `POST` request to Cloudinary
-
-With everything ready we can send the request to Cloudinary and start the video slideshow generation. We will use Laravel's Http Request based on Guzzle.
-
-```php
-$response = Http::post("https://api.cloudinary.com/v1_1/$cloudName/video/create_slideshow", [
-  'api_key'          => env('CLOUDINARY_API_KEY'),
-  'signature'        => $signature,
-  'timestamp'        => $timestamp,
-  'manifest_json'    => $manifestJson,
-  'resource_type'    => 'video',
-  'public_id'        => 'test_slideshow',
-  'folder'           => 'video-slideshow',
-  'notification_url' => env('CLOUDINARY_NOTIFICATION_URL')
-]);
-```
-
-**Note:** Once our slideshow is ready Cloudinary will send us a Webhook notification to the  `notification_url`.
-
-If you successfully implemented the code above, you should be able to see the following when you navigate to `http://localhost:8000`:
-
-![Cloudinary Video Slideshow](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656670841/video-slideshow/assets/cloudinary-video-slideshow_ggzziv.png)
-
-## Handling the Webhook Notification
-
-Once we send the request successfully. Cloudinary will send us a `pending` response as it processes the generation of the video slideshow:
-
-![Cloudinary Video Slideshow Success](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656673744/video-slideshow/assets/cloudinary-video-slideshow-successful-request_hiktz2.png)
-
-Cloudinary will send the following response:
-
-```json
-{
-  "status": "processing",
-  "public_id": "test_slideshow",
-  "batch_id": "00b45635e533ab11e63585dd145ab7816ca19bff2bf3f298a0e66d87405ab7793"
-}
-```
-
-When the Cloudinary is done generating the slideshow it will send us a Webhook notification to the notification URL we provided in the request.
+First response will be the upload notification with a `pending` moderation status:
 
 ```json
 {
   "notification_type": "upload",
-  "timestamp": "2021-08-11T07:44:41+00:00",
-  "request_id": "799b0f8305df4206b6d8f5dbdde0cdfc",
-  "asset_id": "640cb419bed70ef5b86e2bbe7cbb388a",
-  "public_id": "test_slideshow",
-  "version": 1628667799,
-  "version_id": "afcd9bdec6552adc43d7f316da077200",
-  "width": 500,
-  "height": 500,
+  "timestamp": "2022-07-03T08:50:25+00:00",
+  "request_id": "200c27d8d22acf7445ea1c759775bdb1",
+  "asset_id": "62a5e294973044fd95df8eb1887a4db3",
+  "public_id": "video-mod/PjtS3MQJUKYZzQ88GJoJMwhEkue2ND-meta5oqW6Z_zLeiusOW9lee_juWlveeUn_a0uy5tcDQ_-_crj35i",
+  "version": 1656838225,
+  "version_id": "fefb04a8f3cd95100600cd3d8e3bdebe",
+  "width": 1280,
+  "height": 720,
   "format": "mp4",
   "resource_type": "video",
-  "created_at": "2021-08-11T07:43:19Z",
-  "tags": [],
-  "pages": 0,
-  "bytes": 521868,
-  "type": "upload",
-  "etag": "d7b3ecf1f5508af9fb8518158e78642f",
-  "placeholder": false,
-  "url": "http://res.cloudinary.com/demo/video/upload/v1628667799/test_slideshow.mp4",
-  "secure_url": "https://res.cloudinary.com/demo/video/upload/v1628667799/test_slideshow.mp4",
-  "access_mode": "public",
-  "audio": {},
-  "video": {
-    "pix_format": "yuv420p",
-    "codec": "h264",
-    "level": 30,
-    "profile": "High",
-    "bit_rate": "163900",
-    "time_base": "1/15360"
-  },
-  "frame_rate": 30,
-  "bit_rate": 166997,
-  "duration": 25,
-  "rotation": 0,
-  "nb_frames": 750
+	"moderation": [
+		{
+			"status": "pending",
+			"kind": "google_video_moderation"
+		}
+	],
+	...
 }
 ```
 
-We will handle this notification by creating a `WebhookController.php` by typing the following command:
+The second response will be the moderation notification. This contains a bunch of data. Take note of the `moderation_status` which will let you know whether the video passed the moderation or not.
+
+```json
+{
+"moderation_response": {
+	"moderation_confidence": "POSSIBLE",
+	"frames": [
+		{
+			"pornography_likelihood": "POSSIBLE",
+			"time_offset": 0.769962
+		},
+		{
+			"pornography_likelihood": "POSSIBLE",
+			"time_offset": 1.891071
+		},
+		{
+			"pornography_likelihood": "POSSIBLE",
+			"time_offset": 2.730552
+		},
+		{
+			"pornography_likelihood": "LIKELY",
+			"time_offset": 3.888789
+		},
+		{
+			"pornography_likelihood": "LIKELY",
+			"time_offset": 4.755875
+		},
+		{
+			"pornography_likelihood": "VERY_LIKELY",
+			"time_offset": 5.77656
+		},
+		{
+			"pornography_likelihood": "LIKELY",
+			"time_offset": 6.650433
+		},
+		{
+			"pornography_likelihood": "VERY_LIKELY",
+			"time_offset": 7.55418
+		},
+		{
+			"pornography_likelihood": "LIKELY",
+			"time_offset": 8.730771
+		}
+	]
+},
+"moderation_status": "rejected",
+"moderation_kind": "google_video_moderation",
+"notification_type": "moderation",
+...
+}
+```
+
+You can checkout the [documentation](https://cloudinary.com/documentation/google_ai_video_moderation_addon) for more details.
+
+## Handling Cloudinary Responses
+
+Webhooks are one of a few ways web applications can communicate with each other. We can receive Cloudinary's responses through a webhook and run processes that will do something like notify the user or ban the video.
+
+Create a `WebhookController.php` by typing the following command:
 
 `php artisan make:controller WebhookController`
 
@@ -435,11 +324,12 @@ public function cloudinary(Request $request) {
   //Verification
   $verified = SignatureVerifier::verifyNotificationSignature(json_encode($request), $request->header('X-Cld-Timestamp'), $request->header('X-Cld-Signature'));
 
-  // If the signature is verified get the secure url to our slideshow
-  if ($verified) {
-    $secureUrl = $request->secure_url;
-
-    return view('livewire.view-slideshow', ['slideshow_url' => $secureUrl]);
+  // If the signature is verified and moderation is rejected
+  if ($verified && $request->moderation_status === 'rejected') {
+    // Ban video
+    ...
+    // Notify user
+		...
   }
 
   return response('Unverified', 401);
@@ -448,9 +338,7 @@ public function cloudinary(Request $request) {
 
 ***Tip:*** A webhook is a mechanism where an application can notify another application that something has happened.
 
-When we receive the notification from Cloudinary we can notify the user by sending them an e-mail, sms or a push notification. It is really up to you but, in this case we are just returning a view and passing the slideshow URL to it.
-
-Since the notifcation from Cloudinary will be an external request we will need to allow it through the `VerifyCsrfToken.php` middleware to prevent CSRF errors.
+Since the notification from Cloudinary will be an external request we will need to allow it through the `VerifyCsrfToken.php` middleware to prevent CSRF errors.
 
 ```php
 ...
@@ -471,17 +359,16 @@ Next, we will create the webhook route in `routes/api.php`.
 And finally update our `CLOUDINARY_NOTIFICATION_URL` in the environment variables file `.env` as follows:
 
 ```php
-CLOUDINARY_NOTIFICATION_URL=https://<example.com>/api/webhooks/cloudinary
+CLOUDINARY_NOTIFICATION_URL=https://<app_url>/api/webhooks/cloudinary
 ```
-
-Finally, we can enjoy our slideshow:
-
-[Video Slideshow](https://res.cloudinary.com/dgrpkngjn/video/upload/v1656676242/video-slideshow/test_slideshow.mp4)
 
 ## Conclusion
 
-Yes, Cloudinary makes it easy to generate a slideshow and by automating and applying some transformations. This is beautiful since it allows you to focus on other things like promoting your business with the newly created slideshow.
+Cloudinary allows you to automatically moderate all videos uploaded to your application using Google's AI Moderation. This is vital in protecting your users from explicit and suggestive adult content in videos on your website or mobile application.
 
-The possibilities are endless, check out Cloudinary for your A to Z media management - upload, storage, administration, manipulation, optimization and delivery.
+Using Cloudinary's upload and delivery APIs we can have peace of mind knowing that videos uploaded on our platforms will be automatically approved for user viewing.
+
+Check out Cloudinary for your A to Z media management - upload, storage, administration, manipulation, optimization and delivery.
 
 [Get started](https://cloudinary.com/signup) with Cloudinary in your Laravel projects for FREE!
+

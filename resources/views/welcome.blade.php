@@ -31,7 +31,7 @@
 		</p>
 		
 		<div class="m-2 bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg">
-			@livewire('multiple-file-upload')
+			@livewire('file-upload')
 		</div>
 		
 		<div class="flex justify-center mt-4 mb-4 sm:items-center sm:justify-between">
@@ -48,7 +48,9 @@
 			window.top.location.href = '{{ url('/') }}';
 		}
 	</script>
+	
 	@livewireScripts
+	@cloudinaryJS
 @show
 </body>
 </html>

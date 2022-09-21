@@ -10,8 +10,7 @@
  Video Moderation with Cloudinary
 </h1>
 
-Cloudinary is a Software-as-a-Service (SaaS) solution for managing all your web or mobile application’s media assets in
-the cloud. Cloudinary offers an end-to-end solution for all your image and video needs, including upload, storage,
+Cloudinary is a Software-as-a-Service (SaaS) solution for managing all your web or mobile application’s media assets in the cloud. Cloudinary offers an end-to-end solution for all your image and video needs, including upload, storage,
 administration, transformation and optimized delivery.
 
 Laravel is a PHP framework developed with developer productivity in mind. The framework also aims to evolve with the web and has already incorporated several new features and ideas in the web development world—such as job queues, **API authentication** out of the box, real-time communication, and much more.
@@ -40,19 +39,19 @@ start ensure you have Composer installed on your machine. Follow step 1 below to
 1. Install [Composer](https://getcomposer.org/) and [PHP](https://www.php.net/manual/en/install.windows.tools.php) on
    your development or production machine.
 2. Install Laravel
-   
+
    a) Via Composer:
-   
+
    `composer create-project --prefer-dist laravel/laravel cloudinary-video-slideshow`
    b) Via Laravel Installer
-   
+
    `composer global require laravel/installer`
-   
+
    `laravel new cloudinary-video-slideshow`
 3. In step 2 above we have installed the Laravel Installer and used it to scaffold a new application in the folder `cloudinary-video-slideshow`. With Laravel installed, we should be able to start and test the server ensuring everything is okay. Change the directory to the project folder and run the local development server by typing the following commands:
-   
+
    `cd cloudinary-video-slideshow`
-   
+
    `php artisan serve`
 
 The Laravel project is now up and running. When you open `http://localhost:8000` on your computer, you should see the image below:
@@ -67,10 +66,10 @@ Cloudinary has a tonne of features from media upload, storage, administration, a
    ![Cloudinary Dashboard](https://res.cloudinary.com/dgrpkngjn/image/upload/v1655976836/assets/cloudinary_dashboard.png)
 2. Google AI Video Moderation Addon - while at the Cloudinary dashboard, click on the Addons menu and subscribe for the Google AI Video Moderation Addon.
    ![Cloudinary Addons](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_addons_z9ovwn.png)
-   
+
    ![Cloudinary Google AI Video Moderation Subscription](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_ai_subscription_eqaqkd.png)
 3. Install [Cloudinary’s Laravel SDK](https://github.com/cloudinary-labs/cloudinary-laravel#installation):
-   
+
    `composer require cloudinary-labs/cloudinary-laravel`
 
 **Note**: Please ensure you follow all the steps in the #Installation section. Publish the configuration file and add
@@ -102,7 +101,7 @@ Let's see this in code.
 To uplaod a video for moderation we will need a UI (User Interface), we will use the Laravel package Livewire to build this.
 
 1. Install Livewire Package by running the following command in your Laravel project:
-   
+
    `composer require livewire/livewire`
 2. Include Livewire scripts and styles on every page that will be using Livewire. In our case `welcome.blade.php`:
 
@@ -119,7 +118,7 @@ To uplaod a video for moderation we will need a UI (User Interface), we will use
 ```
 
 3. We will then create a Livewire Component to handle our image uploads:
-   
+
    `php artisan make:livewire FileUpload`
 
 This will create two files, first `app/Http/Livewire/FileUpload.php` and the other one
@@ -182,14 +181,14 @@ Open the file `app/Http/Livewire/FileUpload.php`. Here, we are going to add a me
 Add the following code to this file.
 
 1. First, we use Livewires `WithFileUploads` to help us with file uploads, then create the variable `$video`.
-   
+
    ```php
    use Livewire\WithFileUploads;
-   
+
    public $video;
    ```
 2. Secondly, we will create the `uploadVideo` function which will upload the video to [Cloudinary](https://cloudinary.com). We will add the `folder`, `resource_type`, `notification_url` and `moderation` which will moderate the video.
-   
+
    ```php
    public function uploadVideo() {
     ...
@@ -355,7 +354,7 @@ Next, we will create the webhook route in `routes/api.php`.
   Route::post('webhooks/cloudinary', [WebhookController::class, 'cloudinary']);
 ````
 
-And finally update our `CLOUDINARY_NOTIFICATION_URL` in the environment variables file `.env` as follows:
+And finally, update our `CLOUDINARY_NOTIFICATION_URL` in the environment variables file `.env` as follows:
 
 ```php
 CLOUDINARY_NOTIFICATION_URL=https://<app_url>/api/webhooks/cloudinary
@@ -376,4 +375,3 @@ Using Cloudinary's upload and delivery APIs we can have peace of mind knowing th
 Check out Cloudinary for your A to Z media management - upload, storage, administration, manipulation, optimization and delivery.
 
 [Get started](https://cloudinary.com/signup) with Cloudinary in your Laravel projects for FREE!
-

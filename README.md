@@ -11,7 +11,7 @@
 </h1>
 
 Cloudinary is a Software-as-a-Service (SaaS) solution for managing all your web or mobile application’s media assets in
-the cloud. Cloudinary offers an end-to-end solution for all your image and video needs, including the upload, storage,
+the cloud. Cloudinary offers an end-to-end solution for all your image and video needs, including upload, storage,
 administration, transformation and optimized delivery.
 
 Laravel is a PHP framework developed with developer productivity in mind. The framework also aims to evolve with the web and has already incorporated several new features and ideas in the web development world—such as job queues, **API authentication** out of the box, real-time communication, and much more.
@@ -22,9 +22,9 @@ Video moderation helps you share highly engaging and effective video content whi
 
 Let's get started.
 
-## PHPSandbox and Github
+## Github
 
-The final project can be viewed on [PHPSandbox]( https://phpsandbox.io/e/x/xeu5u?layout=EditorPreview&defaultPath=%2F&theme=dark&showExplorer=no) and the entire source code is available on my [Github](https://github.com/victorokech/cloudinary-video-mod) repository.
+The entire source code is available on my [Github](https://github.com/victorokech/cloudinary-video-mod) repository.
 
 ## Prerequisites
 
@@ -41,14 +41,14 @@ start ensure you have Composer installed on your machine. Follow step 1 below to
    your development or production machine.
 2. Install Laravel
    
-   1. Via Composer:
-      
-      `composer create-project --prefer-dist laravel/laravel cloudinary-video-slideshow`
-   2. Via Laravel Installer
-      
-      `composer global require laravel/installer`
-      
-      `laravel new cloudinary-video-slideshow`
+   a) Via Composer:
+   
+   `composer create-project --prefer-dist laravel/laravel cloudinary-video-slideshow`
+   b) Via Laravel Installer
+   
+   `composer global require laravel/installer`
+   
+   `laravel new cloudinary-video-slideshow`
 3. In step 2 above we have installed the Laravel Installer and used it to scaffold a new application in the folder `cloudinary-video-slideshow`. With Laravel installed, we should be able to start and test the server ensuring everything is okay. Change the directory to the project folder and run the local development server by typing the following commands:
    
    `cd cloudinary-video-slideshow`
@@ -61,7 +61,7 @@ The Laravel project is now up and running. When you open `http://localhost:8000`
 
 ## Setting up Cloudinary’s Laravel SDK
 
-Cloudinary has a tonne of features from media upload, storage, administration, manipulation to optimization and delivery. In this article, we will use Cloudinary Video Transformations to combine existing or newly uploaded media files to create a slideshow.
+Cloudinary has a tonne of features from media upload, storage, administration, and manipulation to optimization and delivery. In this article, we will use Cloudinary Video Transformations to combine existing or newly uploaded media files to create a slideshow.
 
 1. Sign up for a free Cloudinary account then navigate to the Console page and take note of your Cloud name, API Key and API Secret.
    ![Cloudinary Dashboard](https://res.cloudinary.com/dgrpkngjn/image/upload/v1655976836/assets/cloudinary_dashboard.png)
@@ -69,7 +69,6 @@ Cloudinary has a tonne of features from media upload, storage, administration, m
    ![Cloudinary Addons](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_addons_z9ovwn.png)
    
    ![Cloudinary Google AI Video Moderation Subscription](https://res.cloudinary.com/dgrpkngjn/image/upload/v1656844100/video-mod/assets/cloudinary_ai_subscription_eqaqkd.png)
-   
 3. Install [Cloudinary’s Laravel SDK](https://github.com/cloudinary-labs/cloudinary-laravel#installation):
    
    `composer require cloudinary-labs/cloudinary-laravel`
@@ -160,7 +159,7 @@ This includes the Livewire component we created earlier in our `welcome.blade.ph
 	@enderror
 	</div>
 	<small class="text-muted text-center mt-2" wire:loading wire:target="video">
-		{{ __('Uploading') }}&hellip;
+		{{ __('Uploading') }}…
 	</small>
 	</div>
 	<div class="text-center">
@@ -178,7 +177,7 @@ You will see the implementation in code shortly.
 
 ## Implementation in Code
 
-Open the file `app/Http/Livewire/FileUpload.php`. Here, we are going to add a method that will handle the video selected by the user, upload them to Cloudinary for video moderation.
+Open the file `app/Http/Livewire/FileUpload.php`. Here, we are going to add a method that will handle the video selected by the user, and upload them to Cloudinary for video moderation.
 
 Add the following code to this file.
 
@@ -197,9 +196,9 @@ Add the following code to this file.
    }
    ```
 3. Let's populate our method in step 2 above:
-   
+
 ```php
- public function uploadFiles() {
+public function uploadFiles() {
   /* First we validate the input from the user. We will take a video file less than 10MB in size */
 	$this->validate([
 	  'video' => [
@@ -307,7 +306,7 @@ The second response will be the moderation notification. This contains a bunch o
 }
 ```
 
-You can checkout the [documentation](https://cloudinary.com/documentation/google_ai_video_moderation_addon) for more details.
+You can check out the [documentation](https://cloudinary.com/documentation/google_ai_video_moderation_addon) for more details.
 
 ## Handling Cloudinary Responses
 
@@ -361,6 +360,12 @@ And finally update our `CLOUDINARY_NOTIFICATION_URL` in the environment variable
 ```php
 CLOUDINARY_NOTIFICATION_URL=https://<app_url>/api/webhooks/cloudinary
 ```
+
+## PHPSandbox
+
+The final project can be viewed in the code embed below or directly on [PHPSandbox](https://phpsandbox.io/e/x/fhzst?layout=Preview&defaultPath=%2F&theme=dark&showExplorer=no&openedFiles=).
+
+<figure style="height: 500px;"><iframe src="https://phpsandbox.io/e/x/fhzst?&layout=Preview&iframeId=ypc9hs181v&theme=dark&defaultPath=/&showExplorer=no" style="display: block" loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" height="100%" width="100%"></iframe></figure>
 
 ## Conclusion
 
